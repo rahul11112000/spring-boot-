@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.example.digitalwallet.dto.Transfer;
@@ -89,11 +90,11 @@ public class WalletService {
 
       Optional<Users> client = userService.getUserByEmail(transfer.getClientemail());
       Users clientObj = client.get();
-      Optional<Wallet> clientwallet = walletRepository.findByUser(clientObj);
-      Wallet clientW = clientwallet.get();
+      Wallet clientWallet = walletRepository.findByUser(clientObj)
+      .orElseThrow(() -> new UsernameNotFoundException("User not found: " + clientObj));
 
-      clientW.setBalance(clientW.getBalance() + transfer.getAmount());
-      walletRepository.save(clientW);
+      clientWallet.setBalance(clientWallet.getBalance() + transfer.getAmount());
+      walletRepository.save(clientWallet);
 
       w.setBalance(w.getBalance() - transfer.getAmount());
       walletRepository.save(w);

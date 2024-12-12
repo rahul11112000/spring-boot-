@@ -15,7 +15,6 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,10 +42,10 @@ public class ClientController {
 
    }
 
-   @GetMapping("/wallet/{userId}")
-   public Optional<Wallet> getWalletDetails(@PathVariable Integer userId){
+   @GetMapping("/wallet")
+   public Optional<Wallet> getWalletDetails(Authentication authentication){
 
-      Optional<Users> user = userService.getUser(userId);
+      Optional<Users> user = userService.getUserByEmail(authentication.getName());
       Users userObj = user.get();
 
       return walletService.getDetails(userObj);
@@ -55,7 +54,6 @@ public class ClientController {
 
    @PostMapping("/create/wallet")
    public String createWallet(Authentication authentication){
-
       return walletService.createWallet(authentication);
 
    }
@@ -85,7 +83,7 @@ public class ClientController {
 
    @PutMapping("/transfer/money")
    public String transferMoney(Authentication authentication,@RequestBody Transfer transfer){
-      
+      // System.out.println(transfer);
       return walletService.transfer(authentication, transfer);
       
    }
